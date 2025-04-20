@@ -286,18 +286,31 @@ async function loadMemes(initialLoad = false) {
 }
 
 
-    // Fullscreen functions
-    function showFullscreen(url) {
-      currentUrl = url;
-      fsImage.src = url;
-      fsOverlay.style.display = 'block';
-      backArrow.style.display = 'block';
-    }
+// Fullscreen functions
+function showFullscreen(url) {
+  currentUrl = url;
+  fsImage.src = url;
+  fsOverlay.style.display = 'block'; // Show the fullscreen overlay
+  downloadButtonContainer.style.display = 'block'; // Show the download button
+}
 
-    function hideFullscreen() {
-      fsOverlay.style.display = 'none';
-      backArrow.style.display = 'none';
-    }
+function hideFullscreen() {
+  fsOverlay.style.display = 'none'; // Hide the fullscreen overlay
+  downloadButtonContainer.style.display = 'none'; // Hide the download button
+}
+
+// Download function
+async function downloadGif(url) {
+  const resp = await fetch(url);
+  const blob = await resp.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = url.split('/').pop(); // Get the gif's file name
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+}
 
     // Download function
     async function downloadGif(url) {
