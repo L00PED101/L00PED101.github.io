@@ -235,66 +235,56 @@
   </div>
 
   <script>
-    const API_KEY = 'LIVDSRZULELA';
-    const memesPerPage = 50;
-    let currentChunk = 0;
-    let currentQuery = '';
-    let currentCategory = '';
-    const memeContainer = document.getElementById('memeContainer');
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const backArrow = document.getElementById('backArrow');
-    const fsOverlay = document.getElementById('memeFullScreen');
-    const fsImage = document.getElementById('fsImage');
-    const fsClose = document.getElementById('fsClose');
-    const downloadBtn = document.getElementById('downloadButton');
-    let currentUrl = '';
+// Main load function
+async function loadMemes(initialLoad = false) {
+  if (initialLoad) {
+    currentChunk = 0;
+    memeContainer.innerHTML = '';
+  }
 
-    // Main load function
-    async function loadMemes(initialLoad = false) {
-      if (initialLoad) {
-        currentChunk = 0;
-        memeContainer.innerHTML = '';
-      }
-
-      try {
-        loadMoreBtn.disabled = true;
-        loadMoreBtn.textContent = 'Loading...';
-        
-        let url;
-        const activeCategoryBtn = document.querySelector('.catBtn.active');
-        const isTrendingSelected = activeCategoryBtn && activeCategoryBtn.dataset.cat === '';
-        
-        if (isTrendingSelected && currentQuery === '') {
-          // Use trending endpoint when Trending is selected
-          url = `https://api.tenor.com/v1/trending?key=LIVDSRZULELA`;
-        } else {
-          // For categories or searches
-          const query = currentCategory || currentQuery;
-          const fullQuery = `${query} ${currentChunk}`;
-          url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(fullQuery)}&key=${API_KEY}&limit=${memesPerPage}`;
-        }
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.results) {
-          data.results.forEach(meme => {
-            const memeElement = document.createElement('div');
-            memeElement.className = 'memeWrapper';
-            memeElement.innerHTML = `<img src="${meme.media[0].gif.url}" alt="${meme.title || 'GIF'}">`;
-            memeContainer.appendChild(memeElement);
-          });
-          currentChunk++;
-        }
-      } catch (error) {
-        console.error('Error loading memes:', error);
-      } finally {
-        loadMoreBtn.disabled = false;
-        loadMoreBtn.textContent = 'Load More';
-      }
+  try {
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.textContent = 'Loading...';
+    
+    let url;
+    const activeCategoryBtn = document.querySelector('.catBtn.active');
+    const isTrendingSelected = activeCategoryBtn && activeCategoryBtn.dataset.cat === '';
+    
+    if (isTrendingSelected && currentQuery === '') {
+      // Use trending endpoint when Trending is selected
+      url = `https://api.tenor.com/v1/trending?key=${API_KEY}`;
+    } else {
+      // For categories or searches
+      const query = currentCategory || currentQuery;
+      const fullQuery = `${query} ${currentChunk}`;
+      url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(fullQuery)}&key=${API_KEY}&limit=${memesPerPage}`;
     }
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.results) {
+      data.results.forEach(meme => {
+        const memeElement = document.createElement('div');
+        memeElement.className = 'memeWrapper';
+        memeElement.innerHTML = `<img src="${meme.media[0].gif.url}" alt="${meme.title || 'GIF'}">`;
+        memeContainer.appendChild(memeElement);
+
+        // Attach click event listener for fullscreen
+        memeElement.querySelector('img').addEventListener('click', () => {
+          showFullscreen(meme.media[0].gif.url);
+        });
+      });
+      currentChunk++;
+    }
+  } catch (error) {
+    console.error('Error loading memes:', error);
+  } finally {
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.textContent = 'Load More';
+  }
+}
+
 
     // Fullscreen functions
     function showFullscreen(url) {
