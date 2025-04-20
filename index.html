@@ -1,356 +1,346 @@
 <!DOCTYPE html>
- <html lang="en">
- <head>
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-   <link rel="icon" href="https://github.com/L00PED101/L00PED101.github.io/blob/main/assets/L00PED101.png?raw=true" type="image/x-icon">
-   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <title>L00PED101</title>
-   <style>
-     :root {
-       --bg: #171715;
-       --surface: #262626;
-       --card: #1a1a1a;
-       --text-primary: #f6f4f1;
-       --text-secondary: #f6f4f1;
-       --accent: #f6f4f1;
-       --accent-hover: #7b7b7a;
-       --muted: #3e4042;
-     }
-     /* Reset & Base */
-     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-     body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text-primary); }
-     a { color: inherit; text-decoration: none; }
- 
-     /* Header */
-     header {
-       font-family: 'Space Mono', monospace;
-       font-weight: 50; /* For bold weight */
-       letter-spacing: -0.05em; /* Optional: Adjust letter spacing to match Space Mono's style */
-       padding: 16px;
-       background: var(--surface);
-       display: flex;
-       align-items: center;
-       justify-content: space-between;
-       position: relative;
-     }
-     header h1 { font-size: 1.4rem; color: var(--accent); }
- 
-     /* Back Arrow */
-     #backArrow {
-       display: none;
-       position: absolute;
-       top: 16px;
-       left: 16px;
-       font-size: 2rem;
-       color: var(--accent);
-       cursor: pointer;
-     }
- 
-     /* Search Bar */
-     #searchBar {
-       display: flex;
-       justify-content: center;
-       padding: 12px;
-       background: var(--surface);
-     }
-     #searchBar input {
-       width: 100%;
-       max-width: 400px;
-       padding: 10px 16px;
-       border: none;
-       border-radius: 999px;
-       margin-right: 8px;
-       background: var(--card);
-       color: var(--text-primary);
-       font-size: 1rem;
-     }
-     #searchBar button {
-       padding: 10px 16px;
-       border: none;
-       background: var(--accent);
-       border-radius: 999px;
-       font-size: 1rem;
-       cursor: pointer;
-       color: #000;
-     }
-     #searchBar button:hover { background: var(--accent-hover); }
- 
-     /* Category Row */
-     #categories {
-       display: flex;
-       overflow-x: auto;
-       gap: 8px;
-       padding: 12px 16px;
-       background: var(--surface);
-     }
-     #categories::-webkit-scrollbar { height: 6px; }
-     #categories::-webkit-scrollbar-track { background: var(--surface); }
-     #categories::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-     .catBtn {
-       flex: 0 0 auto;
-       padding: 8px 16px;
-       background: var(--card);
-       border-radius: 999px;
-       font-size: 0.9rem;
-       cursor: pointer;
-       color: var(--text-secondary);
-       white-space: nowrap;
-       border: 1px solid var(--muted);
-     }
-     .catBtn.active {
-       background: var(--accent);
-       color: #000;
-     }
- 
-     /* Meme Grid */
-     #memeContainer {
-       display: grid;
-       gap: 8px;
-       padding: 16px;
-       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-     }
-     .memeWrapper {
-       position: relative;
-       width: 100%;
-       padding-bottom: 100%;
-       background: var(--card);
-       border-radius: 8px;
-       overflow: hidden;
-     }
-     .memeWrapper img {
-       position: absolute;
-       top: 0; left: 0;
-       width: 100%; height: 100%;
-       object-fit: cover;
-       cursor: pointer;
-     }
- 
-     /* Load More Button */
-     #loadMoreBtn {
-       display: block;
-       margin: 20px auto;
-       padding: 12px 24px;
-       background: var(--accent);
-       color: black;
-       border: none;
-       border-radius: 8px;
-       cursor: pointer;
-       font-weight: bold;
-     }
-     #loadMoreBtn:hover { background: var(--accent-hover); }
-     #loadMoreBtn:disabled {
-       background: var(--muted);
-       cursor: not-allowed;
-     }
- 
-     /* Fullscreen Overlay */
-     #memeFullScreen {
-       display: none;
-       position: fixed;
-       top: 0; left: 0;
-       width: 100%; height: 100%;
-       background: rgba(0, 0, 0, 0.9);
-       z-index: 1000;
-     }
-     #fsContent {
-       position: absolute;
-       top: 0; left: 0;
-       width: 70%; height: 100%;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       justify-content: center;
-       background: var(--surface);
-       padding: 16px;
-     }
-     #fsContent img {
-       max-width: 100%;
-       max-height: 80%;
-       border-radius: 8px;
-     }
-     #downloadButtonContainer {
-       margin-top: 16px;
-       transform: scale(3);
-     }
-     #downloadButton {
-       padding: 8px 12px;
-       border: none;
-       background: var(--accent);
-       color: #000;
-       border-radius: 8px;
-       cursor: pointer;
-       font-size: 0.9rem;
-     }
-     #downloadButton:hover { background: var(--accent-hover); }
-     #fsClose {
-       position: absolute;
-       top: 16px; left: 72%;
-       font-size: 2rem;
-       color: var(--accent);
-       cursor: pointer;
-     }
- 
-     /* Responsive Typography */
-     html { font-size: 16px; }
-     @media (max-width: 600px)  { html { font-size: 14px; } }
-     @media (min-width: 1200px) { html { font-size: 18px; } }
-   </style>
- </head>
- <body>
-   <header>
-     <h1>L00PED101</h1>
-     <div id="backArrow">&larr;</div>
-   </header>
-   <div id="searchBar">
-     <input id="searchInput" placeholder="Search GIFs..." />
-     <button id="searchBtn">Search</button>
-   </div>
-   <div id="categories">
-     <div class="catBtn active" data-cat="">Trending</div>
-     <script>
-       const cats = ['Reactions','Sports','Memes','Movies','Music','Gaming','Anime','Comics','Animals','Science','Nature','Art','Travel','Food','Fashion','Pets','TV','Celebs','Tech','Cars','Fitness','DIY','History','Space','Outdoors','Quotes','Lifestyle','Beauty','Health','Gadgets','Architecture','Culture','Education','Business','Finance','Parenting','Relationships','Holidays','Cartoons','Memes2','Viral','Fails','Cute','Funny','Cartoons2','Series','Foodie','Travel2','Adventures','MusicFest','Live'];
-       const container = document.getElementById('categories');
-       cats.forEach(name => {
-         const btn = document.createElement('div');
-         btn.className = 'catBtn'; btn.dataset.cat = name.toLowerCase();
-         btn.textContent = name;
-         container.appendChild(btn);
-       });
-     </script>
-   </div>
-   <div id="memeContainer"></div>
-   <button id="loadMoreBtn">Load More</button>
- 
-   <div id="memeFullScreen">
-     <div id="fsContent">
-       <img id="fsImage" src="" alt="Full GIF" />
-       <div id="downloadButtonContainer">
-         <button id="downloadButton">Download</button>
-       </div>
-     </div>
-     <div id="fsClose">&times;</div>
-   </div>
- 
-   <script>
-     const API_KEY = 'LIVDSRZULELA';
-     const memesPerPage = 50;
-     let currentChunk = 0;
-     let currentQuery = '';
-     let currentCategory = '';
-     const memeContainer = document.getElementById('memeContainer');
-     const loadMoreBtn = document.getElementById('loadMoreBtn');
-     const searchInput = document.getElementById('searchInput');
-     const searchBtn = document.getElementById('searchBtn');
-     const backArrow = document.getElementById('backArrow');
-     const fsOverlay = document.getElementById('memeFullScreen');
-     const fsImage = document.getElementById('fsImage');
-     const fsClose = document.getElementById('fsClose');
-     const downloadBtn = document.getElementById('downloadButton');
-     let currentUrl = '';
- 
-     // Main load function
-     async function loadMemes(initialLoad = false) {
-       if (initialLoad) {
-         currentChunk = 0;
-         memeContainer.innerHTML = '';
-       }
- 
-       try {
-         loadMoreBtn.disabled = true;
-         loadMoreBtn.textContent = 'Loading...';
-         
-         let url;
-         const activeCategoryBtn = document.querySelector('.catBtn.active');
-         const isTrendingSelected = activeCategoryBtn && activeCategoryBtn.dataset.cat === '';
-         
-         if (isTrendingSelected && currentQuery === '') {
-           // Use trending endpoint when Trending is selected
-           url = `https://api.tenor.com/v1/trending?key=LIVDSRZULELA`;
-         } else {
-           // For categories or searches
-           const query = currentCategory || currentQuery;
-           const fullQuery = `${query} ${currentChunk}`;
-           url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(fullQuery)}&key=${API_KEY}&limit=${memesPerPage}`;
-         }
-         
-         const response = await fetch(url);
-         const data = await response.json();
-         
-         if (data.results) {
-           data.results.forEach(meme => {
-             const memeElement = document.createElement('div');
-             memeElement.className = 'memeWrapper';
-             memeElement.innerHTML = `<img src="${meme.media[0].gif.url}" alt="${meme.title || 'GIF'}">`;
-             memeContainer.appendChild(memeElement);
-           });
-           currentChunk++;
-         }
-       } catch (error) {
-         console.error('Error loading memes:', error);
-       } finally {
-         loadMoreBtn.disabled = false;
-         loadMoreBtn.textContent = 'Load More';
-       }
-     }
- 
-     // Fullscreen functions
-     function showFullscreen(url) {
-       currentUrl = url;
-       fsImage.src = url;
-       fsOverlay.style.display = 'block';
-       backArrow.style.display = 'block';
-     }
- 
-     function hideFullscreen() {
-       fsOverlay.style.display = 'none';
-       backArrow.style.display = 'none';
-     }
- 
-     // Download function
-     async function downloadGif(url) {
-       const resp = await fetch(url);
-       const blob = await resp.blob();
-       const a = document.createElement('a');
-       a.href = URL.createObjectURL(blob);
-       a.download = url.split('/').pop();
-       document.body.appendChild(a);
-       a.click();
-       a.remove();
-       URL.revokeObjectURL(a.href);
-     }
- 
-     // Event listeners
-     searchBtn.addEventListener('click', () => {
-       currentQuery = searchInput.value.trim();
-       currentCategory = '';
-       document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
-       document.querySelector('.catBtn[data-cat=""]').classList.add('active');
-       loadMemes(true);
-     });
- 
-     document.getElementById('categories').addEventListener('click', e => {
-       if (!e.target.classList.contains('catBtn')) return;
-       document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
-       e.target.classList.add('active');
-       searchInput.value = '';
-       currentCategory = e.target.dataset.cat;
-       currentQuery = '';
-       loadMemes(true);
-     });
- 
-     loadMoreBtn.addEventListener('click', () => loadMemes(false));
-     fsClose.addEventListener('click', hideFullscreen);
-     backArrow.addEventListener('click', hideFullscreen);
-     downloadBtn.addEventListener('click', () => currentUrl && downloadGif(currentUrl));
-     fsOverlay.addEventListener('click', e => e.target === fsOverlay && hideFullscreen());
- 
-     // Initial load
-     window.addEventListener('load', () => {
-       loadMemes(true);
-     });
-   </script>
- </body>
- </html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://github.com/L00PED101/L00PED101.github.io/blob/main/assets/L00PED101.png?raw=true" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L00PED101</title>
+  <style>
+    :root {
+      --bg: #171715;
+      --surface: #262626;
+      --card: #1a1a1a;
+      --text-primary: #f6f4f1;
+      --text-secondary: #f6f4f1;
+      --accent: #f6f4f1;
+      --accent-hover: #7b7b7a;
+      --muted: #3e4042;
+    }
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text-primary); }
+    a { color: inherit; text-decoration: none; }
+
+    /* Header */
+    header {
+      font-family: 'Space Mono', monospace;
+      font-weight: 50; /* For bold weight */
+      letter-spacing: -0.05em; /* Optional: Adjust letter spacing to match Space Mono's style */
+      padding: 16px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    header h1 { font-size: 1.4rem; color: var(--accent); }
+
+    /* Back Arrow */
+    #backArrow {
+      display: none;
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 2rem;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Search Bar */
+    #searchBar {
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      background: var(--surface);
+    }
+    #searchBar input {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 999px;
+      margin-right: 8px;
+      background: var(--card);
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+    #searchBar button {
+      padding: 10px 16px;
+      border: none;
+      background: var(--accent);
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #000;
+    }
+    #searchBar button:hover { background: var(--accent-hover); }
+
+    /* Category Row */
+    #categories {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--surface);
+    }
+    #categories::-webkit-scrollbar { height: 6px; }
+    #categories::-webkit-scrollbar-track { background: var(--surface); }
+    #categories::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+    .catBtn {
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      background: var(--card);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      border: 1px solid var(--muted);
+    }
+    .catBtn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* Meme Grid */
+    #memeContainer {
+      display: grid;
+      gap: 8px;
+      padding: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    .memeWrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .memeWrapper img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    /* Load More Button */
+    #loadMoreBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #loadMoreBtn:hover { background: var(--accent-hover); }
+    #loadMoreBtn:disabled {
+      background: var(--muted);
+      cursor: not-allowed;
+    }
+
+    /* Fullscreen Overlay */
+    #memeFullScreen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+    }
+    #fsContent {
+      position: absolute;
+      top: 0; left: 0;
+      width: 70%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      padding: 16px;
+    }
+    #fsContent img {
+      max-width: 100%;
+      max-height: 80%;
+      border-radius: 8px;
+    }
+    #downloadButtonContainer {
+      margin-top: 16px;
+      transform: scale(3);
+    }
+    #downloadButton {
+      padding: 8px 12px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    #downloadButton:hover { background: var(--accent-hover); }
+    #fsClose {
+      position: absolute;
+      top: 16px; left: 72%;
+      font-size: 2rem;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Responsive Typography */
+    html { font-size: 16px; }
+    @media (max-width: 600px)  { html { font-size: 14px; } }
+    @media (min-width: 1200px) { html { font-size: 18px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>L00PED101</h1>
+    <div id="backArrow">&larr;</div>
+  </header>
+  <div id="searchBar">
+    <input id="searchInput" placeholder="Search GIFs..." />
+    <button id="searchBtn">Search</button>
+  </div>
+  <div id="categories">
+    <div class="catBtn active" data-cat="">Trending</div>
+    <script>
+      const cats = ['Reactions','Sports','Memes','Movies','Music','Gaming','Anime','Comics','Animals','Science','Nature','Art','Travel','Food','Fashion','Pets','TV','Celebs','Tech','Cars','Fitness','DIY','History','Space','Outdoors','Quotes','Lifestyle','Beauty','Health','Gadgets','Architecture','Culture','Education','Business','Finance','Parenting','Relationships','Holidays','Cartoons','Memes2','Viral','Fails','Cute','Funny','Cartoons2','Series','Foodie','Travel2','Adventures','MusicFest','Live'];
+      const container = document.getElementById('categories');
+      cats.forEach(name => {
+        const btn = document.createElement('div');
+        btn.className = 'catBtn'; btn.dataset.cat = name.toLowerCase();
+        btn.textContent = name;
+        container.appendChild(btn);
+      });
+    </script>
+  </div>
+  <div id="memeContainer"></div>
+  <button id="loadMoreBtn">Load More</button>
+
+  <div id="memeFullScreen">
+    <div id="fsContent">
+      <img id="fsImage" src="" alt="Full GIF" />
+      <div id="downloadButtonContainer">
+        <button id="downloadButton">Download</button>
+      </div>
+    </div>
+    <div id="fsClose">&times;</div>
+  </div>
+
+  <script>
+// Main load function
+async function loadMemes(initialLoad = false) {
+  if (initialLoad) {
+    currentChunk = 0;
+    memeContainer.innerHTML = '';
+  }
+
+  try {
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.textContent = 'Loading...';
+    
+    let url;
+    const activeCategoryBtn = document.querySelector('.catBtn.active');
+    const isTrendingSelected = activeCategoryBtn && activeCategoryBtn.dataset.cat === '';
+    
+    if (isTrendingSelected && currentQuery === '') {
+      // Use trending endpoint when Trending is selected
+      url = `https://api.tenor.com/v1/trending?key=${API_KEY}`;
+    } else {
+      // For categories or searches
+      const query = currentCategory || currentQuery;
+      const fullQuery = `${query} ${currentChunk}`;
+      url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(fullQuery)}&key=${API_KEY}&limit=${memesPerPage}`;
+    }
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.results) {
+      data.results.forEach(meme => {
+        const memeElement = document.createElement('div');
+        memeElement.className = 'memeWrapper';
+        memeElement.innerHTML = `<img src="${meme.media[0].gif.url}" alt="${meme.title || 'GIF'}">`;
+        memeContainer.appendChild(memeElement);
+
+        // Attach click event listener for fullscreen
+        memeElement.querySelector('img').addEventListener('click', () => {
+          showFullscreen(meme.media[0].gif.url);
+        });
+      });
+      currentChunk++;
+    }
+  } catch (error) {
+    console.error('Error loading memes:', error);
+  } finally {
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.textContent = 'Load More';
+  }
+}
+
+
+    // Fullscreen functions
+    function showFullscreen(url) {
+      currentUrl = url;
+      fsImage.src = url;
+      fsOverlay.style.display = 'block';
+      backArrow.style.display = 'block';
+    }
+
+    function hideFullscreen() {
+      fsOverlay.style.display = 'none';
+      backArrow.style.display = 'none';
+    }
+
+    // Download function
+    async function downloadGif(url) {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = url.split('/').pop();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Event listeners
+    searchBtn.addEventListener('click', () => {
+      currentQuery = searchInput.value.trim();
+      currentCategory = '';
+      document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
+      document.querySelector('.catBtn[data-cat=""]').classList.add('active');
+      loadMemes(true);
+    });
+
+    document.getElementById('categories').addEventListener('click', e => {
+      if (!e.target.classList.contains('catBtn')) return;
+      document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
+      e.target.classList.add('active');
+      searchInput.value = '';
+      currentCategory = e.target.dataset.cat;
+      currentQuery = '';
+      loadMemes(true);
+    });
+
+    loadMoreBtn.addEventListener('click', () => loadMemes(false));
+    fsClose.addEventListener('click', hideFullscreen);
+    backArrow.addEventListener('click', hideFullscreen);
+    downloadBtn.addEventListener('click', () => currentUrl && downloadGif(currentUrl));
+    fsOverlay.addEventListener('click', e => e.target === fsOverlay && hideFullscreen());
+
+    // Initial load
+    window.addEventListener('load', () => {
+      loadMemes(true);
+    });
+  </script>
+</body>
+</html>
