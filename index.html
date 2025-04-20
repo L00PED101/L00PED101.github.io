@@ -235,18 +235,6 @@
   </div>
 
   <script>
-const fsOverlay              = document.getElementById('memeFullScreen');
-const fsImage                = document.getElementById('fsImage');
-const fsClose                = document.getElementById('fsClose');
-const backArrow              = document.getElementById('backArrow');
-const downloadButtonContainer = document.getElementById('downloadButtonContainer');
-const downloadButton         = document.getElementById('downloadButton');
-let currentQuery    = '';
-let currentCategory = '';
-let currentChunk    = 0;
-const memesPerPage  = 20;    // or whatever number you like
-const API_KEY = 'LIVDSRZULELA';
-
 // Main load function
 async function loadMemes(initialLoad = false) {
   if (initialLoad) {
@@ -324,44 +312,37 @@ async function downloadGif(url) {
   URL.revokeObjectURL(a.href);
 }
 
-// Event listeners
-searchBtn.addEventListener('click', () => {
-  currentQuery = searchInput.value.trim();
-  currentCategory = '';
-  document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
-  document.querySelector('.catBtn[data-cat=""]').classList.add('active');
-  loadMemes(true);
-});
+    // Download function
+    async function downloadGif(url) {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = url.split('/').pop();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
 
-document.getElementById('categories').addEventListener('click', e => {
-  if (!e.target.classList.contains('catBtn')) return;
-  document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
-  e.target.classList.add('active');
-  searchInput.value = '';
-  currentCategory = e.target.dataset.cat;
-  currentQuery = '';
-  loadMemes(true);
-});
+    // Event listeners
+    searchBtn.addEventListener('click', () => {
+      currentQuery = searchInput.value.trim();
+      currentCategory = '';
+      document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
+      document.querySelector('.catBtn[data-cat=""]').classList.add('active');
+      loadMemes(true);
+    });
 
-loadMoreBtn.addEventListener('click', () => loadMemes(false));
-fsClose.addEventListener('click', hideFullscreen);
-backArrow.addEventListener('click', hideFullscreen);
-downloadButton.addEventListener('click', () => currentUrl && downloadGif(currentUrl));
-fsOverlay.addEventListener('click', e => e.target === fsOverlay && hideFullscreen());
-
-// Meme click event to show fullscreen
-document.querySelectorAll('.memeWrapper img').forEach(img => {
-  img.addEventListener('click', (e) => {
-    const memeUrl = e.target.src;
-    showFullscreen(memeUrl); // Show the meme in fullscreen with download option
-  });
-});
-
-// Initial load
-window.addEventListener('load', () => {
-  loadMemes(true);
-});
-
+    document.getElementById('categories').addEventListener('click', e => {
+      if (!e.target.classList.contains('catBtn')) return;
+      document.querySelectorAll('.catBtn').forEach(c => c.classList.remove('active'));
+      e.target.classList.add('active');
+      searchInput.value = '';
+      currentCategory = e.target.dataset.cat;
+      currentQuery = '';
+      loadMemes(true);
+    });
 
     loadMoreBtn.addEventListener('click', () => loadMemes(false));
     fsClose.addEventListener('click', hideFullscreen);
